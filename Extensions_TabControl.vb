@@ -205,6 +205,7 @@ Public Module TabControl_Extensions
 #End Region
 #End Region
 #Region "ALL TABS"
+
 #Region "Remove TABs"
     ''' <summary>
     ''' Closes all tabs

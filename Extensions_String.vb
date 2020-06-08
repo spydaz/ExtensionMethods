@@ -1,4 +1,5 @@
 ﻿Imports System.Text
+Imports System.Web.Script.Serialization
 
 Public Module StringExtensions
 #Region "Freq"
@@ -1569,6 +1570,225 @@ PROC_ERR:
         Return lst
     End Function
 #End Region
+
+#Region "Json"
+    ''' <summary>
+    ''' Used To Hold Json Properties
+    ''' </summary>
+    Private Structure JsonColum
+        ''' <summary>
+        ''' FeildName
+        ''' </summary>
+        Public ColumName As String
+        ''' <summary>
+        ''' Value Held
+        ''' </summary>
+        Public Data As String
+    End Structure
+    ''' <summary>
+    ''' deserialize object from Json
+    ''' </summary>
+    ''' <param name="Str">json</param>
+    ''' <returns></returns>
+    <Runtime.CompilerServices.Extension()>
+    Public Function DeSerializeJson(ByRef Str As String) As Object
+        Try
+            Dim Converter As New JavaScriptSerializer
+            Dim diag As Object = Converter.Deserialize(Of Object)(Str)
+
+            Return diag
+        Catch ex As Exception
+            Dim Buttons As MessageBoxButtons = MessageBoxButtons.OK
+            MessageBox.Show(ex.Message, "ERROR", Buttons)
+        End Try
+        Return Nothing
+    End Function
+    Private Function CreateDataSet(ByRef JSON_TEXT As String) As List(Of JsonColum)
+        On Error Resume Next
+        'Deserialize
+        Dim JsonType As Object = DeSerializeJson(JSON_TEXT)
+        Dim JsonDataset As New List(Of JsonColum)
+        For Each item In JsonType
+
+            'New Colum (Feild)
+            Dim Col As New JsonColum
+
+            If item.value.GetType().ToString = "System.String" = True Then
+                'Save colum and data held
+                Col.ColumName = item.key.ToString
+                Col.Data = item.value.ToString
+                'Update Json DataSet
+                JsonDataset.Add(Col)
+            Else
+                'Dim temp As String = item.value.GetType().ToString
+                If item.value.GetType().ToString = "System.Object[]" Then
+                    'Get Sub Table
+                    'Dim Count As Integer = 1
+                    'For Each SubItem In item.value
+                    '    Col.ColumName = item.key & " " & Count
+                    '    Col.Data = SubItem.ToString
+
+                    '    '        'Update Json DataSet
+                    '    JsonDataset.Add(Col)
+                    '    Count += 1
+                    'Next
+                    Dim Count As Integer = 1
+                    For Each SubItem In item.value
+                        For Each pair In SubItem
+                            Col.ColumName = pair.Key & " " & Count
+                            Col.Data = pair.Value
+
+                            '        'Update Json DataSet
+                            JsonDataset.Add(Col)
+
+
+
+                        Next
+                        Count += 1
+                    Next
+
+                Else
+                End If
+            End If
+
+        Next
+        Return JsonDataset
+    End Function
+    ''' <summary>
+    ''' Attempts to Get Dataset from Json
+    ''' </summary>
+    ''' <param name="JSON_TEXT"></param>
+    ''' <returns></returns>
+    <Runtime.CompilerServices.Extension()>
+    Public Function JsonToDatset(ByRef JSON_TEXT As String) As DataSet
+
+        'Deserialize
+        Dim JsonType As Object = DeSerializeJson(JSON_TEXT)
+        'Prepare Datasets
+        Dim DS As New DataSet
+        'GET COLUMN NAMES
+        Dim JsonDataset As List(Of JsonColum) = CreateDataSet(JSON_TEXT)
+
+        ''Create Table
+        DS.Tables.Add("Json")
+        'Create Feilds
+        For Each item In JsonDataset
+            'Add ColumName
+            DS.Tables("Json").Columns.Add(item.ColumName)
+        Next
+
+        'Create Datarow
+        Dim dsNewRow As DataRow
+        'Set Row For Json Table
+        dsNewRow = DS.Tables("Json").NewRow()
+        'Insert Data from JsonDataSet
+        For Each item In JsonDataset
+            'AddColumn
+            dsNewRow.Item(item.ColumName) = item.Data
+        Next
+        'Add Row
+        DS.Tables("Json").Rows.Add(dsNewRow)
+        Return DS
+    End Function
+    ''' <summary>
+    ''' Converts Datatable to Json String
+    ''' </summary>
+    ''' <param name="DT"></param>
+    ''' <returns></returns>
+    <Runtime.CompilerServices.Extension()>
+    Public Function DataTableToJson(ByRef DT As DataTable) As String
+        Dim dict As New Dictionary(Of String, Object)
+        'Get Rows
+        Dim arr(DT.Rows.Count) As Object
+        For i As Integer = 0 To DT.Rows.Count - 1
+            arr(i) = DT.Rows(i).ItemArray
+        Next
+        'Add Row to Dictionary
+        dict.Add(DT.TableName, arr)
+        'Create JSON
+        Dim json As New JavaScriptSerializer
+        Return json.Serialize(dict)
+    End Function
+    ''' <summary>
+    ''' Converts data held in Datagridview to Datatable 
+    ''' </summary>
+    ''' <param name="DGV"></param>
+    ''' <returns></returns>
+    <Runtime.CompilerServices.Extension()>
+    Public Function DataGridToTable(ByRef DGV As DataGridView) As DataTable
+        'Creating DataTable.
+        Dim dt As New DataTable()
+        '     Dim DGV As DataGridView = GetCurrentTabDataGridView(TabDocumentBrowser)
+        'Adding the Columns.
+        For Each column As DataGridViewColumn In DGV.Columns
+            dt.Columns.Add(column.HeaderText, column.ValueType)
+        Next
+
+        'Adding the Rows.
+        For Each row As DataGridViewRow In DGV.Rows
+            dt.Rows.Add()
+            For Each cell As DataGridViewCell In row.Cells
+                dt.Rows(dt.Rows.Count - 1)(cell.ColumnIndex) = cell.Value.ToString()
+            Next
+        Next
+        Return dt
+    End Function
+
+#End Region
+
+
+    '''' <summary>
+    '''' Converts JSON that is not nested into a DataTable.  
+    '''' Typically this would be JSON that represents the contents of a table that
+    '''' is not nested.
+    '''' </summary>
+    '''' <param name="json"></param>
+    '''' <param name="tableName"></param>
+    '''' <returns></returns>
+    '''' <remarks></remarks>
+    '<Runtime.CompilerServices.Extension()>
+    'Public Function JsonToDataTable(json As String, tableName As String) As DataTable
+    '    Dim columnsCreated As Boolean = False
+    '    Dim dt As New DataTable(tableName)
+
+    '    Dim root As Newtonsoft.Json.Linq.JObject = Newtonsoft.Json.Linq.JObject.Parse(json)
+    '    Dim items As Newtonsoft.Json.Linq.JArray = DirectCast(root(tableName), Newtonsoft.Json.Linq.JArray)
+
+    '    Dim item As Newtonsoft.Json.Linq.JObject
+    '    Dim jtoken As Newtonsoft.Json.Linq.JToken
+
+    '    For i As Integer = 0 To items.Count - 1
+    '        ' Create the columns once
+    '        If columnsCreated = False Then
+    '            item = DirectCast(items(i), Newtonsoft.Json.Linq.JObject)
+    '            jtoken = item.First
+
+    '            While jtoken IsNot Nothing
+    '                dt.Columns.Add(New DataColumn(DirectCast(jtoken, Newtonsoft.Json.Linq.JProperty).Name.ToString()))
+    '                jtoken = jtoken.[Next]
+    '            End While
+
+    '            columnsCreated = True
+    '        End If
+
+    '        ' Add each of the columns into a new row then put that new row into the DataTable
+    '        item = DirectCast(items(i), Newtonsoft.Json.Linq.JObject)
+    '        jtoken = item.First
+
+    '        ' Create the new row, put the values into the columns then add the row to the DataTable
+    '        Dim dr As DataRow = dt.NewRow
+
+    '        While jtoken IsNot Nothing
+    '            dr(DirectCast(jtoken, Newtonsoft.Json.Linq.JProperty).Name.ToString()) = DirectCast(jtoken, Newtonsoft.Json.Linq.JProperty).Value.ToString()
+    '            jtoken = jtoken.[Next]
+    '        End While
+
+    '        dt.Rows.Add(dr)
+    '    Next
+
+    '    Return dt
+
+    'End Function
 End Module
 
 
