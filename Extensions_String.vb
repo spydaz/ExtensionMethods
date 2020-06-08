@@ -1,5 +1,8 @@
-﻿Imports System.Text
+﻿Imports System.IO
+Imports System.Net
+Imports System.Text
 Imports System.Web.Script.Serialization
+Imports Microsoft.VisualBasic.ApplicationServices
 
 Public Module StringExtensions
 #Region "Freq"
@@ -1570,8 +1573,7 @@ PROC_ERR:
         Return lst
     End Function
 #End Region
-
-#Region "Json"
+#Region "JSON / Dataset Functions"
     ''' <summary>
     ''' Used To Hold Json Properties
     ''' </summary>
@@ -1734,61 +1736,124 @@ PROC_ERR:
         Return dt
     End Function
 
+
+#End Region
+#Region "API Calls GET"
+    ''' <summary>
+    ''' Get function With Credentials
+    ''' </summary>
+    ''' <param name="URL">REQUEST STRING URL</param>
+    ''' <param name="UserAgentID">BROWSER IDENTIFIER</param>
+    ''' <param name="UserName"></param>
+    ''' <param name="Password"></param>
+    ''' <returns>string response</returns>
+    <Runtime.CompilerServices.Extension()>
+    Public Function GetAPIReq(ByRef URL As String, ByRef UserName As String, ByRef Password As String,
+                              Optional UserAgentID As String = "SpydazWebAI") As String
+        Dim Request As System.Net.HttpWebRequest = System.Net.HttpWebRequest.Create(URL)
+        Request.Proxy = Nothing
+        Request.UserAgent = UserAgentID
+        Request.Credentials = New NetworkCredential(UserName, Password)
+
+        Dim Response As System.Net.HttpWebResponse = Request.GetResponse
+        Dim ResponseStream As IO.Stream = Response.GetResponseStream
+
+        Dim Streamreader As New System.IO.StreamReader(ResponseStream)
+        Dim Data As String = Streamreader.ReadToEnd
+        Streamreader.Close()
+
+        Return Data
+    End Function
+    ''' <summary>
+    ''' Gets request response from API
+    ''' </summary>
+    ''' <param name="URL">REQUEST STRING URL</param>
+    ''' <param name="UserAgentID">BROWSER IDENTIFIER</param>
+    ''' <returns></returns>
+    <Runtime.CompilerServices.Extension()>
+    Public Function GetAPIReq(ByRef URL As String, Optional UserAgentID As String = "SpydazWebAI") As String
+        Dim Request As HttpWebRequest = HttpWebRequest.Create(URL)
+        Request.Proxy = Nothing
+        Request.UserAgent = UserAgentID
+
+        Dim Response As HttpWebResponse = Request.GetResponse
+        Dim ResponseStream As IO.Stream = Response.GetResponseStream
+
+        Dim Streamreader As New System.IO.StreamReader(ResponseStream)
+        Dim Data As String = Streamreader.ReadToEnd
+        Streamreader.Close()
+
+        Return Data
+    End Function
+#End Region
+#Region "API calls POST"
+    ''' <summary>
+    ''' POST FUNCTION With Credentials
+    ''' </summary>
+    ''' <param name="URL">REQUEST STRING URL</param>
+    ''' <param name="UserAgentID">BROWSER IDENTIFIER</param>
+    ''' <param name="Data"></param>
+    ''' <param name="Username"></param>
+    ''' <param name="Password"></param>
+    ''' <returns></returns>
+    <Runtime.CompilerServices.Extension()>
+    Public Function PostAPIReq(ByRef URL As String, ByRef Data As String, ByRef Username As String, ByRef Password As String,
+                               Optional UserAgentID As String = "SpydazWebAI") As String
+        Dim Request As System.Net.HttpWebRequest = System.Net.HttpWebRequest.Create(URL)
+        Dim DataReturned As String
+        Request.Proxy = Nothing
+        Request.UserAgent = UserAgentID
+        Request.Credentials = New NetworkCredential(Username, Password)
+        Request.Method = "POST"
+        Request.ContentType = "text/plain;charset=utf-8"
+        Dim encoding As New System.Text.UTF8Encoding()
+        Dim bytes As Byte() = encoding.GetBytes(Data)
+        Request.ContentLength = bytes.Length
+        Using requestStream As Stream = Request.GetRequestStream()
+            ' Send the data.  
+            requestStream.Write(bytes, 0, bytes.Length)
+            Dim Response As System.Net.HttpWebResponse = Request.GetResponse()
+            Dim ResponseStream As IO.Stream = Response.GetResponseStream
+            Dim Streamreader As New System.IO.StreamReader(ResponseStream)
+            DataReturned = Streamreader.ReadToEnd
+            Streamreader.Close()
+        End Using
+        'GetResponse
+        Return DataReturned
+    End Function
+    ''' <summary>
+    ''' Post Function
+    ''' </summary>
+    ''' <param name="URL">REQUEST STRING URL</param>
+    ''' <param name="UserAgentID">BROWSER IDENTIFIER</param>
+    ''' <param name="Data">Post data in Json Form</param>
+    ''' <returns></returns>
+    <Runtime.CompilerServices.Extension()>
+    Public Function PostAPIReq(ByRef URL As String, ByRef Data As String, Optional UserAgentID As String = "SpydazWebAI") As String
+        Dim Request As System.Net.HttpWebRequest = System.Net.HttpWebRequest.Create(URL)
+        Dim DataReturned As String
+        Request.Proxy = Nothing
+        Request.UserAgent = UserAgentID
+
+        Request.Method = "POST"
+        Request.ContentType = "text/plain;charset=utf-8"
+        Dim encoding As New System.Text.UTF8Encoding()
+        Dim bytes As Byte() = encoding.GetBytes(Data)
+        Request.ContentLength = bytes.Length
+        Using requestStream As Stream = Request.GetRequestStream()
+            ' Send the data.  
+            requestStream.Write(bytes, 0, bytes.Length)
+            Dim Response As System.Net.HttpWebResponse = Request.GetResponse()
+            Dim ResponseStream As IO.Stream = Response.GetResponseStream
+            Dim Streamreader As New System.IO.StreamReader(ResponseStream)
+            DataReturned = Streamreader.ReadToEnd
+            Streamreader.Close()
+        End Using
+        'GetResponse
+        Return DataReturned
+    End Function
 #End Region
 
-
-    '''' <summary>
-    '''' Converts JSON that is not nested into a DataTable.  
-    '''' Typically this would be JSON that represents the contents of a table that
-    '''' is not nested.
-    '''' </summary>
-    '''' <param name="json"></param>
-    '''' <param name="tableName"></param>
-    '''' <returns></returns>
-    '''' <remarks></remarks>
-    '<Runtime.CompilerServices.Extension()>
-    'Public Function JsonToDataTable(json As String, tableName As String) As DataTable
-    '    Dim columnsCreated As Boolean = False
-    '    Dim dt As New DataTable(tableName)
-
-    '    Dim root As Newtonsoft.Json.Linq.JObject = Newtonsoft.Json.Linq.JObject.Parse(json)
-    '    Dim items As Newtonsoft.Json.Linq.JArray = DirectCast(root(tableName), Newtonsoft.Json.Linq.JArray)
-
-    '    Dim item As Newtonsoft.Json.Linq.JObject
-    '    Dim jtoken As Newtonsoft.Json.Linq.JToken
-
-    '    For i As Integer = 0 To items.Count - 1
-    '        ' Create the columns once
-    '        If columnsCreated = False Then
-    '            item = DirectCast(items(i), Newtonsoft.Json.Linq.JObject)
-    '            jtoken = item.First
-
-    '            While jtoken IsNot Nothing
-    '                dt.Columns.Add(New DataColumn(DirectCast(jtoken, Newtonsoft.Json.Linq.JProperty).Name.ToString()))
-    '                jtoken = jtoken.[Next]
-    '            End While
-
-    '            columnsCreated = True
-    '        End If
-
-    '        ' Add each of the columns into a new row then put that new row into the DataTable
-    '        item = DirectCast(items(i), Newtonsoft.Json.Linq.JObject)
-    '        jtoken = item.First
-
-    '        ' Create the new row, put the values into the columns then add the row to the DataTable
-    '        Dim dr As DataRow = dt.NewRow
-
-    '        While jtoken IsNot Nothing
-    '            dr(DirectCast(jtoken, Newtonsoft.Json.Linq.JProperty).Name.ToString()) = DirectCast(jtoken, Newtonsoft.Json.Linq.JProperty).Value.ToString()
-    '            jtoken = jtoken.[Next]
-    '        End While
-
-    '        dt.Rows.Add(dr)
-    '    Next
-
-    '    Return dt
-
-    'End Function
 End Module
 
 
