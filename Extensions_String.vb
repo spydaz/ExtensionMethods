@@ -459,7 +459,6 @@ Public Module StringExtensions
             Tokenizer.Add(InputStr(i))
         Next
     End Function
-
     ''' <summary>
     ''' Return Tokens in string divided by seperator
     ''' </summary>
@@ -471,7 +470,6 @@ Public Module StringExtensions
         Tokenizer = New List(Of String)
         InputStr = GetValidTokens(InputStr)
         Dim Tokens() As String = InputStr.Split(Divider)
-
         For Each item In Tokens
             Tokenizer.Add(item)
         Next
@@ -531,12 +529,11 @@ Public Module StringExtensions
         Next
         Return CharStr
     End Function
-
     ''' <summary>
     ''' Removes Tokens From String by Type
     ''' </summary>
-    ''' <param name="UserStr"></param>
-    ''' <param name="nType"></param>
+    ''' <param name="UserStr">String</param>
+    ''' <param name="nType">Token Type - removes All Tokens Defined by this type</param>
     ''' <returns></returns>
     <Runtime.CompilerServices.Extension()>
     Public Function RemoveTokenType(ByRef UserStr As String, ByRef nType As TokenType) As String
@@ -601,7 +598,6 @@ Public Module StringExtensions
         End Select
         Return UserStr
     End Function
-
     <Runtime.CompilerServices.Extension()>
     Public Function AlphanumericOnly(ByRef Str As String) As String
         Str = Str.GetValidTokens
@@ -616,7 +612,6 @@ Public Module StringExtensions
         Str = Str.Remove("_")
         Return Str
     End Function
-
 #End Region
 #Region "Split"
     ''' <summary>
@@ -700,10 +695,9 @@ Public Module StringExtensions
     ''' <remarks></remarks>
     <System.Runtime.CompilerServices.Extension()>
     Public Function CountElements(ByVal PHRASE As String, ByVal Delimiter As String) As Integer
-        Dim elementcounter As Integer = 0
         Dim PhraseArray As String()
         PhraseArray = PHRASE.Split(Delimiter)
-        elementcounter = UBound(PhraseArray)
+        Dim elementcounter As Integer = UBound(PhraseArray)
         Return elementcounter
     End Function
 
@@ -749,7 +743,7 @@ Public Module StringExtensions
             lngPos = InStr(lngPos + 1, strIn, strFind)
             If lngPos > 0 Then
                 ' Increment the hit counter
-                lngWordCount = lngWordCount + 1
+                lngWordCount += 1
             End If
         Loop
 
@@ -809,7 +803,7 @@ PROC_ERR:
             For i = 0 To 9 'Takes every element of v(9) one by one
                 'Check if current letter is a vowel
                 If Mid(InputString, flag, 1) = v(i) Then
-                    vcount = vcount + 1 ' If letter is equal to vowel
+                    vcount += 1 ' If letter is equal to vowel
                     'then increment vcount by 1
                 End If
             Next i 'Consider next value of v(i)
@@ -849,7 +843,7 @@ PROC_ERR:
             For i = 0 To 9 'Takes every element of v(9) one by one
                 'Check if current letter is a vowel
                 If Mid(InputString, flag, 1) = v(i) Then
-                    vcount = vcount + 1 ' If letter is equal to vowel
+                    vcount += 1 ' If letter is equal to vowel
                     'then increment vcount by 1
                 End If
             Next i 'Consider next value of v(i)
@@ -949,10 +943,9 @@ PROC_ERR:
     ''' <returns></returns>
     <System.Runtime.CompilerServices.Extension()>
     Public Function CapitaliseTEXT(ByVal MESSAGE As String) As String
-        Dim FirstLetter As String = ""
         CapitaliseTEXT = ""
         If MESSAGE = "" Then Exit Function
-        FirstLetter = Left(MESSAGE, 1)
+        Dim FirstLetter As String = Left(MESSAGE, 1)
         FirstLetter = UCase(FirstLetter)
         MESSAGE = Right(MESSAGE, Len(MESSAGE) - 1)
         CapitaliseTEXT = (FirstLetter + LCase(MESSAGE))
@@ -1557,11 +1550,11 @@ PROC_ERR:
         Dim NgramArr() As String = Split(Str, " ")
         Dim Length As Integer = NgramArr.Count
         Dim lst As New List(Of String)
-        Dim Str2 As String = ""
+
         If Length - Ngrams > 0 Then
 
             For i = 0 To Length - Ngrams
-                Str2 = ""
+                Dim Str2 As String = ""
                 Dim builder As New System.Text.StringBuilder()
                 builder.Append(Str2)
                 For j = 0 To Ngrams - 1
