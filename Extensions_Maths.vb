@@ -1510,6 +1510,8 @@ End Module
 ''' </summary>
 Public Class Probability
 
+
+
     Public Shared Function BayesProbabilityOfAGivenB(ByRef ProbA As Integer, ProbB As Integer) As Integer
         BayesProbabilityOfAGivenB = (ProbabilityofBgivenA(ProbA, ProbB) * ProbA) / ProbabilityOfData(ProbA, ProbB)
     End Function

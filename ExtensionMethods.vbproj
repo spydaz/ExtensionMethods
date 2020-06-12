@@ -75,6 +75,7 @@
     <Import Include="System.Threading.Tasks" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Extensions_API.vb" />
     <Compile Include="Extensions_Files.vb" />
     <Compile Include="Extensions_TabControl.vb" />
     <Compile Include="Extensions_Maths.vb" />
