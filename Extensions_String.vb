@@ -4,6 +4,7 @@ Imports System.Text
 Imports System.Web.Script.Serialization
 Imports Microsoft.VisualBasic.ApplicationServices
 
+<HideModuleName(), System.ComponentModel.ImmutableObject(True)>
 Public Module StringExtensions
 #Region "Freq"
     ''' <summary>

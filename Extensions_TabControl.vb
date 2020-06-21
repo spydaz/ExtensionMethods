@@ -4,6 +4,7 @@ Imports System.Net
 ''' Tab control Extensions 
 ''' Tab controllers provided here require Tabpages integer - This is the Current Count of Tabpages
 ''' </summary>
+<HideModuleName(), System.ComponentModel.ImmutableObject(True)>
 Public Module TabControl_Extensions
 #Region "Text Tabs"
 #Region "Text Tab Functions"

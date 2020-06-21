@@ -8,7 +8,7 @@ Imports System.Runtime.InteropServices
 
 ' Review the values of the assembly attributes
 
-<Assembly: AssemblyTitle("ExtensionMethods Library")>
+<Assembly: AssemblyTitle("SpydazWeb.Extension.Methods")>
 <Assembly: AssemblyDescription("Basic Extension Methods Library")>
 <Assembly: AssemblyCompany("SpydazWeb AI")>
 <Assembly: AssemblyProduct("SpydazWeb AI ExtensionMethods")>

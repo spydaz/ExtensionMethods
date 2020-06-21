@@ -5,6 +5,7 @@ Imports System.Xml.Serialization
 ''' <summary>
 ''' Maths Extension Methods
 ''' </summary>
+<HideModuleName(), System.ComponentModel.ImmutableObject(True)>
 Public Module MathsExtensions
     'Math Functions
 

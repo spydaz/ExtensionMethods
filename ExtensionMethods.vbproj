@@ -9,7 +9,7 @@
     <StartupObject>
     </StartupObject>
     <RootNamespace>ExtensionMethods</RootNamespace>
-    <AssemblyName>ExtensionMethods</AssemblyName>
+    <AssemblyName>SpydazWeb.Extension.Methods</AssemblyName>
     <FileAlignment>512</FileAlignment>
     <MyType>Windows</MyType>
     <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
@@ -23,7 +23,7 @@
     <DefineDebug>true</DefineDebug>
     <DefineTrace>true</DefineTrace>
     <OutputPath>bin\Debug\</OutputPath>
-    <DocumentationFile>ExtensionMethods.xml</DocumentationFile>
+    <DocumentationFile>SpydazWeb.Extension.Methods.xml</DocumentationFile>
     <NoWarn>42016,41999,42017,42018,42019,42032,42036,42020,42021,42022</NoWarn>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
@@ -33,7 +33,7 @@
     <DefineTrace>true</DefineTrace>
     <Optimize>true</Optimize>
     <OutputPath>bin\Release\</OutputPath>
-    <DocumentationFile>ExtensionMethods.xml</DocumentationFile>
+    <DocumentationFile>SpydazWeb.Extension.Methods.xml</DocumentationFile>
     <NoWarn>42016,41999,42017,42018,42019,42032,42036,42020,42021,42022</NoWarn>
   </PropertyGroup>
   <PropertyGroup>
@@ -75,11 +75,13 @@
     <Import Include="System.Threading.Tasks" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="DateTimeExtensions.vb" />
     <Compile Include="Extensions_API.vb" />
     <Compile Include="Extensions_Files.vb" />
     <Compile Include="Extensions_TabControl.vb" />
     <Compile Include="Extensions_Maths.vb" />
     <Compile Include="Extensions_String.vb" />
+    <Compile Include="ListExtensions.vb" />
     <Compile Include="My Project\AssemblyInfo.vb" />
     <Compile Include="My Project\Application.Designer.vb">
       <AutoGen>True</AutoGen>
